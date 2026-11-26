@@ -97,7 +97,14 @@ nav.top.solid .themebtn{border-color:var(--line);color:var(--ink2)}
 .wipe .tag .dot{width:8px;height:8px;border-radius:50%;background:#d9d6cf}
 .wipe .hint{position:absolute;left:50%;bottom:16px;transform:translateX(-50%);font:500 12.5px/1 var(--sans);color:#fff;background:rgba(10,10,12,.55);padding:7px 12px;border-radius:999px;pointer-events:none;transition:opacity .4s;white-space:nowrap}
 .wipe.touched .hint{opacity:0}
-.heropick{display:flex;gap:10px;justify-content:center;margin-top:18px;flex-wrap:wrap}
+.herotabs{display:flex;gap:4px;width:max-content;max-width:100%;margin:22px auto 0;padding:4px;border-radius:999px;border:1px solid rgba(255,255,255,.1);background:rgba(255,255,255,.03);overflow-x:auto;scrollbar-width:none;-webkit-overflow-scrolling:touch}
+.herotabs::-webkit-scrollbar{display:none}
+.ht{flex:0 0 auto;display:flex;align-items:center;gap:7px;padding:7px 14px;border:0;border-radius:999px;background:transparent;color:var(--heroink2);font:500 13.5px/1 var(--sans);cursor:pointer;white-space:nowrap;transition:all .2s}
+.ht:hover{color:var(--heroink)}
+.ht .n{font:600 11px/1 var(--mono);padding:3px 6px;border-radius:6px;background:rgba(255,255,255,.08);color:var(--heroink2)}
+.ht.on{background:rgba(196,103,58,.16);color:var(--heroink);box-shadow:inset 0 0 0 1px var(--accent2)}
+.ht.on .n{background:var(--accent2);color:#fff}
+.heropick{display:flex;gap:10px;justify-content:center;margin-top:14px;flex-wrap:wrap}
 .hp{display:flex;align-items:center;gap:10px;padding:6px 14px 6px 6px;border-radius:12px;border:1px solid rgba(255,255,255,.1);background:rgba(255,255,255,.03);color:var(--heroink2);font:500 13px/1.25 var(--sans);cursor:pointer;text-align:left;transition:all .2s}
 .hp img{width:56px;height:32px;object-fit:cover;border-radius:7px;display:block}
 .hp b{display:block;color:var(--heroink);font-weight:600;font-size:13px}
@@ -105,7 +112,7 @@ nav.top.solid .themebtn{border-color:var(--line);color:var(--ink2)}
 .hp.on{border-color:var(--accent2);background:rgba(196,103,58,.12)}
 .herocap{max-width:820px;margin:16px auto 0;text-align:center;color:var(--heroink2);font-size:14.5px;min-height:46px}
 .herocap b{color:var(--heroink);font-weight:600}
-@media (max-width:640px){.hp span{display:none}.hp{padding:5px}.hp img{width:64px;height:36px}.wipe{border-radius:12px}.wipe .tag{font-size:11px;top:10px;padding:5px 8px}.wipe .tag.l{left:10px}.wipe .tag.r{right:10px}.wipe .knob{width:36px;height:36px;margin:-18px 0 0 -18px}}
+@media (max-width:640px){.ht{padding:7px 11px;font-size:12.5px}.heropick{gap:8px}.hp span{display:none}.hp{padding:5px}.hp img{width:64px;height:36px}.wipe{border-radius:12px}.wipe .tag{font-size:11px;top:10px;padding:5px 8px}.wipe .tag.l{left:10px}.wipe .tag.r{right:10px}.wipe .knob{width:36px;height:36px;margin:-18px 0 0 -18px}}
 
 /* ---------- sections ---------- */
 section{padding:96px 0}
@@ -326,6 +333,7 @@ footer .wrap{display:flex;justify-content:space-between;gap:20px;flex-wrap:wrap}
       <span class="tag r" id="wTagR"></span>
       <span class="hint">Drag to compare</span>
     </div>
+    <div class="herotabs" id="herotabs" role="tablist"></div>
     <div class="heropick" id="heropick"></div>
     <p class="herocap" id="herocap"></p>
   </div>
@@ -507,17 +515,33 @@ function play(v){var p=v.play();if(p&&p.catch)p.catch(function(){});}
 
 /* ---------------- hero wipe ---------------- */
 var HERO=[
- {id:"C057",model:"Seedance 2.0",t:"First-person",tag:"Lighting change",cap:"<b>First-person, k = 4.</b> At 6 s the lantern light strengthens, brightening the sand, both faces, and my hands. The clay fixes layout and motion. The video generation model adds the light."},
- {id:"C192",model:"Kling 4.0",t:"2D animation",tag:"Contact",cap:"<b>2D animation, k = 1.</b> P2 passes the sword from his right hand to P1's left. P1 secures the blade before P2 releases the hilt."},
- {id:"C159",model:"Seedance 2.0",t:"2D animation",tag:"Six knobs",cap:"<b>2D animation, k = 6.</b> A bottle handover in a bar with a distant figure, occlusion, and tempo constraints. At 5 s the warm light weakens across the whole scene."},
- {id:"C191",model:"Seedance 2.0",t:"2D animation",tag:"Multiple events",cap:"<b>2D animation, k = 2.</b> P3 raises his right arm and extends it left in 3 to 4 s, then lowers his head in 4 to 5 s. The two events stay sequential."},
- {id:"C177",model:"Seedance 2.0",t:"2D animation",tag:"Base scene",cap:"<b>2D animation, k = 0.</b> P1 draws his right hand to his chest, lowers it beside his leg, and ends on the left facing right."}
+ {cat:"2d",id:"C159",model:"Seedance 2.0",tag:"Six knobs",k:6,cap:"<b>2D animation, k = 6.</b> A bottle handover in a bar with a distant figure, occlusion, and tempo constraints. At 5 s the warm light weakens across the whole scene."},
+ {cat:"2d",id:"C192",model:"Kling 4.0",tag:"Contact",k:1,cap:"<b>2D animation, k = 1.</b> P2 passes the sword from his right hand to P1's left. P1 secures the blade before P2 releases the hilt."},
+ {cat:"2d",id:"C188",model:"Seedance 2.0",tag:"Contact and pan",k:4,cap:"<b>2D animation, k = 4.</b> P1 leans in from the doorway and holds out the shirt. At 3 s P2 grips it before she lets go, then the view pans right."},
+ {cat:"2d",id:"C191",model:"Seedance 2.0",tag:"Multiple events",k:2,cap:"<b>2D animation, k = 2.</b> P3 raises his right arm and extends it left in 3 to 4 s, then lowers his head in 4 to 5 s. The two events stay sequential."},
+ {cat:"2d",id:"C177",model:"Seedance 2.0",tag:"Base scene",k:0,cap:"<b>2D animation, k = 0.</b> P1 draws his right hand to his chest, lowers it beside his leg, and ends on the left facing right."},
+ {cat:"fp",id:"C057",model:"Seedance 2.0",tag:"Lighting change",k:4,cap:"<b>First-person, k = 4.</b> At 6 s the lantern light strengthens, brightening the sand, both faces, and my hands. The clay fixes layout and motion. The video generation model adds the light."},
+ {cat:"fp",id:"C053",model:"Seedance 2.0",tag:"Six knobs",k:6,cap:"<b>First-person, k = 6.</b> Seven people wait in a studio while I set the brush down and open the toolbox lid. At 2 s my head turns right and all seven stay in frame."},
+ {cat:"fp",id:"C079",model:"Seedance 2.0",tag:"State and camera",k:2,cap:"<b>First-person, k = 2.</b> P1 checks the film at the lamp and closes the empty can at 6 s. At 7 s I turn right and the lamp moves to the center."},
+ {cat:"tp",id:"C017",model:"Seedance 2.0",tag:"Path crossing",k:2,cap:"<b>Third-person, k = 2.</b> At 3 s P1, carrying the box, and P3, walking left, cross at the center of the alley. P3 passes nearer the camera and neither touches the other."},
+ {cat:"tp",id:"C019",model:"Seedance 2.0",tag:"Handover and occlusion",k:4,cap:"<b>Third-person, k = 4.</b> P1 takes the white card before P2 lets go. P1 then walks behind the sign and reappears, and at 8 s the light dims on all three men."},
+ {cat:"tp",id:"C036",model:"Seedance 2.0",tag:"Occlusion and lighting",k:4,cap:"<b>Third-person, k = 4.</b> The phone screen lights up at 2 s. P1 walks behind the panel and reappears at its left edge, and at 6 s the scene darkens while the screen stays lit."},
+ {cat:"ms",id:"C139",model:"Seedance 2.0",tag:"Handover and lighting",k:2,cap:"<b>Multi-shot, k = 2.</b> One 15 s generation with hard cuts. P1 supports the bowl before P2 releases it at 8 s, and at 12 s the last shot darkens."},
+ {cat:"ms",id:"C106",model:"Seedance 2.0",tag:"Cross-shot consistency",k:4,cap:"<b>Multi-shot, k = 4.</b> One 15 s generation with cuts at 5 s and 10 s. The red pouch stays on the same tile across both cuts and opens in the last shot to show three props."},
+ {cat:"ms",id:"C108",model:"Seedance 2.0",tag:"Handover across cuts",k:2,cap:"<b>Multi-shot, k = 2.</b> One 15 s generation with hard cuts. P2 supports the paper before P1 releases the cake, and both keep their seats and looks across the cuts."}
 ];
+var CATS=[{c:"2d",t:"2D animation"},{c:"fp",t:"First-person"},{c:"tp",t:"Third-person"},{c:"ms",t:"Multi-shot"}];
 var wipe=document.getElementById('wipe'),wTop=document.getElementById('wTop'),wBot=document.getElementById('wBot'),wBar=document.getElementById('wBar'),wKnob=document.getElementById('wKnob');
-var hpick=document.getElementById('heropick'),hcap=document.getElementById('herocap'),tagR=document.getElementById('wTagR'),hi=0;
-HERO.forEach(function(h,i){var b=document.createElement('button');b.className='hp';b.innerHTML='<img src="img/frames/'+h.id+'_first.jpg" alt=""><span><b>'+esc(h.t)+'</b>'+esc(h.tag)+'</span>';b.onclick=function(){setHero(i);};hpick.appendChild(b);});
+var htabs=document.getElementById('herotabs'),hpick=document.getElementById('heropick'),hcap=document.getElementById('herocap'),tagR=document.getElementById('wTagR'),hi=-1,hc=null;
+CATS.forEach(function(c){var n=HERO.filter(function(h){return h.cat===c.c;}).length;var b=document.createElement('button');b.className='ht';b.type='button';b.setAttribute('role','tab');b.dataset.cat=c.c;b.innerHTML=esc(c.t)+'<span class="n">'+n+'</span>';
+  b.onclick=function(){for(var i=0;i<HERO.length;i++)if(HERO[i].cat===c.c){setHero(i);break;}};htabs.appendChild(b);});
+function buildPick(cat){hc=cat;hpick.innerHTML='';
+  HERO.forEach(function(h,i){if(h.cat!==cat)return;var b=document.createElement('button');b.className='hp';b.type='button';b.dataset.i=i;
+    b.innerHTML='<img src="img/frames/'+h.id+'_first.jpg" alt=""><span><b>'+esc(h.tag)+'</b>k = '+h.k+'</span>';b.onclick=function(){setHero(i);};hpick.appendChild(b);});
+  [].forEach.call(htabs.children,function(b){var on=b.dataset.cat===cat;b.classList.toggle('on',on);b.setAttribute('aria-selected',on?'true':'false');if(on&&htabs.scrollWidth>htabs.clientWidth)htabs.scrollLeft=b.offsetLeft-(htabs.clientWidth-b.offsetWidth)/2;});}
 function setHero(i){hi=i;var h=HERO[i];
-  [].forEach.call(hpick.children,function(b,j){b.classList.toggle('on',j===i);});
+  if(h.cat!==hc)buildPick(h.cat);
+  [].forEach.call(hpick.children,function(b){b.classList.toggle('on',+b.dataset.i===i);});
   wBot.poster='media/hero/'+h.id+'_render_poster.jpg';
   wTop.src='media/hero/'+h.id+'_clay.mp4';wBot.src='media/hero/'+h.id+'_render.mp4';
   tagR.innerHTML='<img src="'+LOGO[h.model]+'" alt="">'+esc(h.model)+' + clay';
@@ -537,7 +561,7 @@ wipe.addEventListener('pointercancel',function(){drag=false;});
 wipe.addEventListener('mouseenter',function(){auto=false;wipe.classList.add('touched');});
 // gentle intro sweep until the user interacts
 (function sweep(ts){if(!auto)return;ph=(ts||0)/1000;setPos(50+28*Math.sin(ph*0.9));requestAnimationFrame(sweep);})();
-setHero(0);
+setHero(HERO.map(function(h){return h.id;}).indexOf("C057"));
 
 /* ---------------- clay representations ---------------- */
 var REP=window.CLAYREP,REPS=[
